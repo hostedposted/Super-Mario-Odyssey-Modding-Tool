@@ -1,0 +1,10 @@
+*.szs
+.vscode
+*.pyc
+test.py
+RomFS
+patches
+imgui.ini
+output
+*.byml
+auto-py-to-exe-config.json
