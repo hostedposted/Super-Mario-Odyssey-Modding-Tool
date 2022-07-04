@@ -1,16 +1,18 @@
 import asyncio
 import json
 import os
+import random
+import shutil
+import subprocess
 import sys
 import tempfile
-import subprocess
 from tkinter import filedialog, messagebox, simpledialog
 from typing import Literal
 
 import byml
 import imgui
 import libyaz0
-import pygui
+import pygui  # py-gui-tool
 import SarcLib
 from appdirs import user_config_dir
 
@@ -379,6 +381,22 @@ def select_patches_folder():
         mustexist=True, title="Patches Folder"
     ) or window.state.get("patches_path", "")
 
+@window.menu("Randomize", "Randomize Music")
+def randomize_music():
+    if not window.state.get("romfs_path"):
+        return messagebox.showerror("Error", "No RomFS folder selected")
+    if not window.state.get("patches_path"):
+        return messagebox.showerror("Error", "No Patches folder selected")
+    files = os.listdir(os.path.join(window.state["romfs_path"], "SoundData", "stream"))
+    random_files = random.sample(files, len(files))
+    
+    if not os.path.exists(os.path.join(window.state["patches_path"], "SoundData", "stream")):
+        os.makedirs(os.path.join(window.state["patches_path"], "SoundData", "stream"))
+    
+    for old, new in zip(files, random_files):
+        shutil.copyfile(os.path.join(window.state["romfs_path"], "SoundData", "stream", old), os.path.join(window.state["patches_path"], "SoundData", "stream", new))
+
+    messagebox.showinfo("Success", "Randomized music")
 
 @window.frame("Shop Editor", 735, 480, (50, 100))
 def shop_editor_frame(elements: pygui.Elements):
